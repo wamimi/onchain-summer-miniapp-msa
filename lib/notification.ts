@@ -1,7 +1,8 @@
-import { notificationDetailsSchema } from "@farcaster/miniapp-sdk";
-import type { z } from "zod";
-
-type MiniAppNotificationDetails = z.infer<typeof notificationDetailsSchema>;
+// Define type based on the actual schema structure
+interface MiniAppNotificationDetails {
+  url: string;
+  token: string;
+}
 import { redis } from "./redis";
 
 const notificationServiceKey =

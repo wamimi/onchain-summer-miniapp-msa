@@ -1,12 +1,20 @@
 import {
-  notificationDetailsSchema,
-  sendNotificationRequestSchema,
   sendNotificationResponseSchema,
 } from "@farcaster/miniapp-sdk";
-import type { z } from "zod";
 
-type MiniAppNotificationDetails = z.infer<typeof notificationDetailsSchema>;
-type SendNotificationRequest = z.infer<typeof sendNotificationRequestSchema>;
+// Define types based on the actual schema structure
+interface MiniAppNotificationDetails {
+  url: string;
+  token: string;
+}
+
+interface SendNotificationRequest {
+  notificationId: string;
+  title: string;
+  body: string;
+  targetUrl: string;
+  tokens: string[];
+}
 import { getUserNotificationDetails } from "@/lib/notification";
 
 const appUrl = process.env.NEXT_PUBLIC_URL || "";
@@ -38,7 +46,10 @@ export async function sendFrameNotification({
     return { state: "no_token" };
   }
 
-  const response = await fetch(notificationDetails.url, {
+  // TypeScript assertion - we know it's not null after the check above
+  const validNotificationDetails = notificationDetails as MiniAppNotificationDetails;
+
+  const response = await fetch(validNotificationDetails.url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +59,7 @@ export async function sendFrameNotification({
       title,
       body,
       targetUrl: appUrl,
-      tokens: [notificationDetails.token],
+      tokens: [validNotificationDetails.token],
     } satisfies SendNotificationRequest),
   });
 
